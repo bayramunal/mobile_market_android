@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <group android:checkableBehavior="single">
+
+        <item android:title="main screen"/>
+        <item android:title="sell item"/>
+        <item android:title="currently on sell"/>
+        <item android:title="sold items"/>
+        <item android:title="your profile"/>
+    </group>
+
+    <item android:title="social">
+        <menu>
+            <item android:title="send message"/>
+            <item android:title="inbox"/>
+            <item android:title="message history"/>
+            <item android:title="deleted messages"/>
+        </menu>
+    </item>
+
+    <item android:title="log out">
+        <menu>
+            <item android:id="@+id/logOut" android:title="log out"/>
+        </menu>
+    </item>
+
+</menu>
