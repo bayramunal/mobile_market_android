@@ -30,12 +30,16 @@ dependencies {
     implementation 'com.firebaseui:firebase-ui-auth:4.3.1'
     implementation 'com.google.android.gms:play-services-auth:17.0.0'
 
+    implementation 'com.google.firebase:firebase-database:16.0.4'
     testİmplementation 'junit:junit:4.12'
     androidTestİmplementation 'androidx.test:runner:1.2.0'
     androidTestİmplementation 'androidx.test.espresso:espresso-core:3.2.0'
     implementation 'com.android.support:recyclerview-v7:28.0.0'
     implementation 'com.android.support:appcompat-v7:26.1.0'
     implementation 'com.android.support:design:26.1.0'
+
+    implementation 'de.hdodenhof:circleimageview:3.0.0'
+
 }
 
 apply plugin: 'com.google.gms.google-services'

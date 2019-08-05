@@ -16,6 +16,12 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class LoginScreenActivity extends AppCompatActivity {
 
@@ -23,6 +29,9 @@ public class LoginScreenActivity extends AppCompatActivity {
     private EditText _edtUserEmail, _edtUserPassword;
     private FirebaseAuth _mAuth;
     private Activity _mAct;
+    private FirebaseUser _currentUser;
+    private DatabaseReference _mDatabase;
+    private FirebaseDatabase _mfirebaseDatabase;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -40,6 +49,7 @@ public class LoginScreenActivity extends AppCompatActivity {
 
         _mAct = this;
         _mAuth = FirebaseAuth.getInstance();
+        _mfirebaseDatabase = FirebaseDatabase.getInstance();
 
         if (_checkCurrentUser())
             HelperClass._afterSucceedLogin(_mAct);
@@ -49,72 +59,62 @@ public class LoginScreenActivity extends AppCompatActivity {
         return _mAuth.getCurrentUser() == null ? false : true;
     }
 
-    private void _printErrorMessage (String message, Exception _exception) {
+    private void _printErrorMessageWithException(String message, Exception _exception) {
         Toast.makeText(LoginScreenActivity.this, message + " " + _exception.getMessage(), Toast.LENGTH_SHORT).show();
     }
 
-    private boolean _validateUserEmail () {
-        String _userEmail = _edtUserEmail.getText().toString().trim();
-        if (_userEmail.isEmpty()) {
-            _textInputEmail.setError("this field cannot be empty");
-            return false;
-        } else {
-            _textInputEmail.setError(null);
-            return true;
-        }
-    }
 
-    private boolean _validateUserPassword () {
-        String _userPassword = _edtUserPassword.getText().toString().trim();
-        if (_userPassword.isEmpty()) {
-            _textInputPassword.setError("this field cannot be empty");
-            return false;
-        } else {
-            _textInputPassword.setError(null);
-            return true;
-        }
-    }
-
-    public void btnSignUp (View view) {
+    public void _loginScreenCreateAccount (View view) {
         String _userEmail = _edtUserEmail.getText().toString();
         String _userPassword = _edtUserPassword.getText().toString();
 
-        if (!HelperClass._isFieldsEmpty(_userEmail, _userPassword)) {
+        if (!HelperClass._isFieldsEmpty(_textInputEmail, _textInputPassword)) {
             _mAuth.createUserWithEmailAndPassword(_userEmail, _userPassword)
                     .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
+                                _setUsersValueOnDatabase();
                                 HelperClass._afterSucceedLogin(_mAct);
                             } else {
-                                _printErrorMessage("failed to sign up :", task.getException());
+                                _printErrorMessageWithException("failed to sign up :", task.getException());
                             }
                         }
                     });
-        } else {
-            HelperClass._showToast(LoginScreenActivity.this, "please fill the blanks");
         }
-
     }
 
-    public void btnSignIn (View view) {
+    public void _btnSignIn(View view) {
         String _userEmail = _edtUserEmail.getText().toString();
         String _userPassword = _edtUserPassword.getText().toString();
 
-        if (!HelperClass._isFieldsEmpty(_userEmail, _userPassword)) {
+        if (!HelperClass._isFieldsEmpty(_textInputEmail, _textInputPassword)) {
             _mAuth.signInWithEmailAndPassword(_userEmail, _userPassword)
                     .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
+                                _setUsersValueOnDatabase();
                                 HelperClass._afterSucceedLogin(_mAct);
                             } else {
-                                _printErrorMessage("failed to sign in :", task.getException());
+                                _printErrorMessageWithException("failed to sign in :", task.getException());
                             }
                         }
                     });
-        } else {
-            HelperClass._showToast(LoginScreenActivity.this, "please fill the blanks");
         }
+    }
+
+    private void _setUsersValueOnDatabase () {
+        _currentUser = _mAuth.getCurrentUser();
+        String _userId = _currentUser.getUid();
+        _mDatabase = _mfirebaseDatabase.getReference().child("_users").child(_userId);
+
+        Map<String, String> _userMap = new HashMap<>();
+        _userMap.put("name", _edtUserEmail.getText().toString());
+        _userMap.put("status", getString(R.string._created_user_status));
+        _userMap.put("image", "default");
+        _userMap.put("thumb_image", "default");
+
+        _mDatabase.setValue(_userMap);
     }
 }

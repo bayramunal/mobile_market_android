@@ -50,6 +50,7 @@
                 style="@style/_editText"
                 android:maxLines="1"
                 android:lines="1"
+                android:nextFocusDown="@id/textInputPassword"
                 />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -91,7 +92,7 @@
             android:layout_height="wrap_content"
             android:text="sign in"
             android:textAllCaps="false"
-            android:onClick="btnSignIn"
+            android:onClick="_btnSignIn"
             style="@style/_button"
             android:layout_marginTop="40dp"
             android:layout_below="@+id/loginScreenEditTextField"
@@ -109,6 +110,7 @@
         android:text="no account yet? create now"
         android:textStyle="italic"
         android:layout_centerHorizontal="true"
+        android:onClick="_loginScreenCreateAccount"
         />
 
     <LinearLayout

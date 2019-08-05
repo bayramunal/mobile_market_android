@@ -11,7 +11,7 @@ import com.example.mobile_shopping.R;
 
 public class ItemListAdapter extends RecyclerView.Adapter<ItemListViewHolder> {
 
-	// will be edit
+
 
     @NonNull
     @Override

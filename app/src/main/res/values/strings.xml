@@ -2,4 +2,5 @@
     <string name="app_name">app name</string>
     <string name="navigation_drawer_open">open navigation drawer</string>
     <string name="navigation_drawer_close">close navigation drawer</string>
+    <string name="_created_user_status">hi there! i am using xApp</string>
 </resources>
