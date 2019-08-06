@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp"
+    android:background="#22A7F0"
+    >
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/changeStatusText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="type your status here"
+        app:hintTextAppearance="@style/_editText"
+        app:hintAnimationEnabled="true"
+        style="@style/_editText"
+        >
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/_editText"
+            />
+
+    </com.google.android.material.textfield.TextInputLayout>
+    
+    <Button
+        android:id="@+id/statusSaveBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="save"
+        android:textAllCaps="false"
+        android:background="@drawable/button_background"
+        android:layout_below="@+id/changeStatusText"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="20dp"
+        android:elevation="20dp"
+        />
+
+</RelativeLayout>

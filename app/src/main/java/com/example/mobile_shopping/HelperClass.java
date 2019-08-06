@@ -1,8 +1,10 @@
 package com.example.mobile_shopping;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.view.View;
 import android.widget.Toast;
 
 import com.example.mobile_shopping.Screens.LoginScreenActivity;
@@ -44,6 +46,19 @@ public class HelperClass {
             _textInput.setError(null);
             return true;
         }
+    }
+
+    public static void _showDialog (Context _context, View _alertView) {
+        //View _alertView = _activity.getLayoutInflater().inflate(_layoutResId, null);
+
+        AlertDialog.Builder _alertBuilder = new AlertDialog.Builder(_context);
+        _alertBuilder.setView(_alertView);
+
+        // get alert items here
+
+        AlertDialog _alertdialog = _alertBuilder.create();
+        _alertdialog.show();
+
     }
 
 
