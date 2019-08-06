@@ -2,6 +2,7 @@ package com.example.mobile_shopping;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.view.View;
@@ -12,6 +13,9 @@ import com.example.mobile_shopping.Screens.MainScreenActivity;
 import com.google.android.material.textfield.TextInputLayout;
 
 public class HelperClass {
+
+    private static ProgressDialog _mProgressDialog;
+
 
     public static void _afterSucceedLogin(Activity activity) {
         activity.startActivity(new Intent(activity, MainScreenActivity.class)
@@ -59,6 +63,19 @@ public class HelperClass {
         AlertDialog _alertdialog = _alertBuilder.create();
         _alertdialog.show();
 
+    }
+
+    public static void _showProgressDialog (Context _context, String _title, String _message) {
+        _mProgressDialog = new ProgressDialog(_context);
+        _mProgressDialog.setTitle(_title);
+        _mProgressDialog.setMessage(_message);
+        _mProgressDialog.show();
+    }
+
+    public static void _dismissDialog () {
+        if (_mProgressDialog != null) {
+            _mProgressDialog.dismiss();
+        }
     }
 
 

@@ -1,6 +1,8 @@
 package com.example.mobile_shopping.Fragments;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,10 +14,12 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.solver.widgets.Helper;
 import androidx.fragment.app.Fragment;
 
 import com.example.mobile_shopping.HelperClass;
 import com.example.mobile_shopping.R;
+import com.example.mobile_shopping.Screens.MainScreenActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputLayout;
@@ -26,26 +30,35 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+import com.theartofdev.edmodo.cropper.CropImage;
+
+import java.util.concurrent.ExecutionException;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+
+import static android.app.Activity.RESULT_OK;
 
 public class UserProfileFragment extends Fragment {
 
     //firebase
     private DatabaseReference _mReference;
     private FirebaseUser _mUser;
+    private StorageReference _mImageStorage;
 
-    //progress
-    private ProgressDialog _mProgressDialog;
 
     private String _userImage, _userName, _userStatus, _userThumImage;
     private CircleImageView _layoutUserImage;
     private TextView _layoutUserDisplayName, _layoutUserStatus;
-    private Button _btnChangeStatus;
+    private Button _btnChangeStatus, _btnProfilePhoto;
     private TextInputLayout _textInputStatus;
     private EditText _textInputEdt;
 
     private View _alertView;
+    private static final int GALLERY_IMAGE_REQUEST = 1;
+    private String _currentUserId;
 
     @Nullable
     @Override
@@ -58,24 +71,38 @@ public class UserProfileFragment extends Fragment {
 
         return _view;
     }
-
     private void _init(View _view) {
         _mUser = FirebaseAuth.getInstance().getCurrentUser();
-
-        String _currentUserId = _mUser.getUid();
+        _currentUserId = _mUser.getUid();
         _mReference = FirebaseDatabase.getInstance().getReference().child("_users").child(_currentUserId);
-        _mProgressDialog = new ProgressDialog(getContext());
+        _mImageStorage = FirebaseStorage.getInstance().getReference();
 
         _layoutUserImage = _view.findViewById(R.id.userProfilePhoto);
         _layoutUserDisplayName = _view.findViewById(R.id.userProfileDisplayName);
         _layoutUserStatus = _view.findViewById(R.id.userProfileStatus);
 
+        _btnProfilePhoto = _view.findViewById(R.id.userProfileChangePhotoBtn);
+        _btnChoosePhotoClick(_btnProfilePhoto);
         _btnChangeStatus = _view.findViewById(R.id.userProfileChangeStatusBtn);
         _btnChangeStatusClick(_btnChangeStatus);
 
         _alertView = getLayoutInflater().inflate(R.layout.status_alert_dialog_layout, null);
         _textInputStatus = _alertView.findViewById(R.id.changeStatusText);
     }
+
+    private void _btnChoosePhotoClick(Button _btn) {
+        _btn.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View view) {
+                Intent _galleryIntent = new Intent();
+                _galleryIntent.setType("image/*");
+                _galleryIntent.setAction(Intent.ACTION_GET_CONTENT);
+                getActivity().startActivityForResult(Intent.createChooser(_galleryIntent, "select an image"), GALLERY_IMAGE_REQUEST);
+            }
+        });
+    }
+
 
     public void _userProfileChangeStatusButton () {
         HelperClass._showDialog(getContext(), _alertView);
@@ -98,10 +125,7 @@ public class UserProfileFragment extends Fragment {
             @Override
             public void onClick(View view) {
 
-                //progress
-                _mProgressDialog.setTitle("saving status");
-                _mProgressDialog.setMessage("please wait, your status is updating...");
-                _mProgressDialog.show();
+                HelperClass._showProgressDialog(getContext(), "saving status", "please wait a moment, your status is updating...");
 
                 _textInputEdt = _textInputStatus.getEditText();
                 String _newStatusText = _textInputEdt.getText().toString();
@@ -112,7 +136,7 @@ public class UserProfileFragment extends Fragment {
                         if (!task.isSuccessful()) {
                             Toast.makeText(getContext(), "your status cant update right now, please try again later", Toast.LENGTH_SHORT).show();
                         }
-                        _mProgressDialog.dismiss();
+                        HelperClass._dismissDialog();
                     }
                 });
             }
