@@ -3,7 +3,6 @@ package com.example.mobile_shopping;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.mobile_shopping.Screens.LoginScreenActivity;

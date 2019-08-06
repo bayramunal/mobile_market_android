@@ -92,7 +92,7 @@
             android:layout_height="wrap_content"
             android:text="sign in"
             android:textAllCaps="false"
-            android:onClick="_btnSignIn"
+            android:onClick="_loginScreenSignIn"
             style="@style/_button"
             android:layout_marginTop="40dp"
             android:layout_below="@+id/loginScreenEditTextField"

@@ -8,7 +8,7 @@
         <item android:title="sell item"/>
         <item android:title="currently on sell"/>
         <item android:title="sold items"/>
-        <item android:title="your profile"/>
+        <item android:id="@+id/drawerMenuProfile" android:title="your profile"/>
     </group>
 
     <item android:title="social">

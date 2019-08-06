@@ -21,7 +21,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.HashMap;
-import java.util.Map;
 
 public class LoginScreenActivity extends AppCompatActivity {
 
@@ -84,7 +83,7 @@ public class LoginScreenActivity extends AppCompatActivity {
         }
     }
 
-    public void _btnSignIn(View view) {
+    public void _loginScreenSignIn(View view) {
         String _userEmail = _edtUserEmail.getText().toString();
         String _userPassword = _edtUserPassword.getText().toString();
 
@@ -94,7 +93,6 @@ public class LoginScreenActivity extends AppCompatActivity {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
-                                _setUsersValueOnDatabase();
                                 HelperClass._afterSucceedLogin(_mAct);
                             } else {
                                 _printErrorMessageWithException("failed to sign in :", task.getException());
@@ -109,11 +107,11 @@ public class LoginScreenActivity extends AppCompatActivity {
         String _userId = _currentUser.getUid();
         _mDatabase = _mfirebaseDatabase.getReference().child("_users").child(_userId);
 
-        Map<String, String> _userMap = new HashMap<>();
-        _userMap.put("name", _edtUserEmail.getText().toString());
-        _userMap.put("status", getString(R.string._created_user_status));
-        _userMap.put("image", "default");
-        _userMap.put("thumb_image", "default");
+        HashMap<String, String> _userMap = new HashMap<>();
+        _userMap.put("_name", _edtUserEmail.getText().toString());
+        _userMap.put("_status", getString(R.string._created_user_status));
+        _userMap.put("_image", "default");
+        _userMap.put("_thumb_image", "default");
 
         _mDatabase.setValue(_userMap);
     }
