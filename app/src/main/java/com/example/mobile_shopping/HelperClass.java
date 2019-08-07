@@ -69,6 +69,7 @@ public class HelperClass {
         _mProgressDialog = new ProgressDialog(_context);
         _mProgressDialog.setTitle(_title);
         _mProgressDialog.setMessage(_message);
+        _mProgressDialog.setCanceledOnTouchOutside(false);
         _mProgressDialog.show();
     }
 

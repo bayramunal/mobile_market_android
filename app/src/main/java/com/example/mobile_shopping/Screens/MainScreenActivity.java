@@ -21,10 +21,13 @@ import com.example.mobile_shopping.Fragments.UserProfileFragment;
 import com.example.mobile_shopping.HelperClass;
 import com.example.mobile_shopping.R;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -44,6 +47,7 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
     private FragmentManager _mFragmentManager;
     private StorageReference _mImageStorage;
     private FirebaseUser _currentUser;
+    private DatabaseReference _mDatabase;
 
     private String _currentUserId;
 
@@ -65,6 +69,7 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
         _mImageStorage = FirebaseStorage.getInstance().getReference();
         _currentUser = FirebaseAuth.getInstance().getCurrentUser();
         _currentUserId = _currentUser.getUid();
+        _mDatabase = FirebaseDatabase.getInstance().getReference().child("_users").child(_currentUserId);
 
         setSupportActionBar(_toolbar);
         _toggle = new ActionBarDrawerToggle(this, _drawerLayout, _toolbar,
@@ -85,7 +90,7 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
 
-        switch(menuItem.getItemId()) {
+        switch (menuItem.getItemId()) {
             case R.id.logOut:
                 _mAuth.signOut();
                 HelperClass._afterLogOut(_mAct);
@@ -95,7 +100,7 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
                 UserProfileFragment _profileFragment = new UserProfileFragment();
                 _mFragmentTransaction.add(R.id.fragment_container, _profileFragment, "_userFragment");
                 _mFragmentTransaction.commit();
-            break;
+                break;
 
         }
         return true;
@@ -107,28 +112,38 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
             Uri _imageUri = data.getData();
 
             CropImage.activity(_imageUri)
-                    .setAspectRatio(1,1)
+                    .setAspectRatio(1, 1)
                     .start(this);
 
         }
 
         if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
-            HelperClass._showProgressDialog(this, "image is saving", "your image is saving in out database, please wait a moment");
             CropImage.ActivityResult _result = CropImage.getActivityResult(data);
 
             if (resultCode == RESULT_OK) {
+                HelperClass._showProgressDialog(this, "image is saving", "your image is saving in out database, please wait a moment");
                 Uri _resultUri = _result.getUri();
                 System.out.println("\n uri : " + _resultUri.toString());
-                StorageReference _filePath = _mImageStorage.child("profile_images").child(_currentUserId + ".jpg");
-                _filePath.putFile(_resultUri).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                final StorageReference _filePath = _mImageStorage.child("profile_images").child(_currentUserId + ".jpg");
+                _filePath.putFile(_resultUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
-                    public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-                        if (!task.isSuccessful())
-                            Toast.makeText(MainScreenActivity.this, "error occur while file saving in database, please try again", Toast.LENGTH_SHORT).show();
-                        else if (task.isSuccessful())
-                            Toast.makeText(MainScreenActivity.this, "saved", Toast.LENGTH_SHORT).show();
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        _filePath.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                            @Override
+                            public void onSuccess(Uri uri) {
+                                _mDatabase.child("_image").setValue(uri.toString()).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        if (task.isSuccessful()) {
+                                            Toast.makeText(MainScreenActivity.this, "your image was successfully added to our storage", Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+                                });
+                            }
+                        });
                         HelperClass._dismissDialog();
                     }
+
                 });
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
                 Exception _exception = _result.getError();
@@ -137,4 +152,17 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
         }
 
     }
+
+    /**
+     *
+     * _mDatabase.child("_image").setValue(_downloadUrl).addOnCompleteListener(new OnCompleteListener<Void>() {
+     *                                 @Override
+     *                                 public void onComplete(@NonNull Task<Void> task) {
+     *                                     if (task.isSuccessful()) {
+     *                                         Toast.makeText(MainScreenActivity.this, "your image was successfully added to our storage", Toast.LENGTH_SHORT).show();
+     *                                     }
+     *                                 }
+     *                             });
+     *
+     */
 }
