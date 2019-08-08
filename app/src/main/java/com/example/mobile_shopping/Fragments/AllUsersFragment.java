@@ -26,7 +26,7 @@ import java.util.ArrayList;
 public class AllUsersFragment extends Fragment implements UsersViewHolder.ClickListener {
 
 
-    public static RecyclerView _mRecycler;
+    private RecyclerView _mRecycler;
     private DatabaseReference _mUsersDatabase;
 
     @Nullable

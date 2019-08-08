@@ -49,6 +49,7 @@
         />
 
     <Button
+        android:id="@+id/userDeatilSendRequest"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/userDetailUserFriendsCount"
@@ -58,7 +59,34 @@
         android:layout_alignStart="@id/userDetailUserFriendsCount"
         android:layout_alignEnd="@id/userDetailUserFriendsCount"
         />
-    
+
+    <Button
+        android:id="@+id/userDeatilDeclineRequest"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/userDeatilSendRequest"
+        android:layout_centerHorizontal="true"
+        android:text="cancel friend request"
+        android:layout_marginTop="10dp"
+        android:layout_alignStart="@id/userDetailUserFriendsCount"
+        android:layout_alignEnd="@id/userDetailUserFriendsCount"
+        android:visibility="gone"
+        />
+
+    <Button
+        android:id="@+id/userDetailAcceptRequest"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/userDeatilDeclineRequest"
+        android:layout_centerHorizontal="true"
+        android:text="decline friend request"
+        android:layout_marginTop="10dp"
+        android:layout_alignStart="@id/userDetailUserFriendsCount"
+        android:layout_alignEnd="@id/userDetailUserFriendsCount"
+        android:visibility="gone"
+        />
+
+
 
 
 
