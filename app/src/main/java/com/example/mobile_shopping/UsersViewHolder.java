@@ -6,10 +6,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.mobile_shopping.Fragments.AllUsersFragment;
 import com.squareup.picasso.Picasso;
 
 import org.w3c.dom.Text;
@@ -20,25 +22,24 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class UsersViewHolder extends RecyclerView.Adapter<UsersViewHolder.MyViewHolder> {
 
-    public TextView _userDisplayName, _userStatus;
-    public CircleImageView _userImage;
 
     LayoutInflater inflater;
     Context context;
 
-    ArrayList<Users> _users;
+    public static ArrayList<Users> _users;
+    private ClickListener _mClickListener;
 
-    public UsersViewHolder(Context context, ArrayList<Users> users) {
+    public UsersViewHolder(Context context, ArrayList<Users> users, ClickListener _mClickListener) {
         inflater = LayoutInflater.from(context);
         this._users = users;
         this.context = context;
+        this._mClickListener = _mClickListener;
     }
-
 
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = inflater.inflate(R.layout.all_users_fragment_item, parent, false);
-        MyViewHolder holder = new MyViewHolder(view);
+        MyViewHolder holder = new MyViewHolder(view, _mClickListener);
         return holder;
     }
 
@@ -47,6 +48,7 @@ public class UsersViewHolder extends RecyclerView.Adapter<UsersViewHolder.MyView
     public void onBindViewHolder(MyViewHolder holder, int position) {
         Users _user = _users.get(position);
         holder.setData(_user, position);
+
     }
 
     @Override
@@ -55,26 +57,39 @@ public class UsersViewHolder extends RecyclerView.Adapter<UsersViewHolder.MyView
     }
 
 
-    class MyViewHolder extends RecyclerView.ViewHolder {
+    class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         TextView _displayName, _status;
+        CircleImageView _userImg;
+        ClickListener _mClickListener;
 
-        public MyViewHolder(View itemView) {
+        public MyViewHolder(View itemView, ClickListener _mClickListener) {
             super(itemView);
             _displayName = itemView.findViewById(R.id.allUsersDisplayName);
             _status = itemView.findViewById(R.id.allUsersStatus);
+            _userImg = itemView.findViewById(R.id.allUserPhoto);
+            this._mClickListener = _mClickListener;
+
+            itemView.setOnClickListener(this);
+
         }
 
         public void setData(Users user, int position) {
             this._displayName.setText(user.get_name());
             this._status.setText(user.get_status());
+            loadImageFromUrl(user.get_image(), _userImg);
+        }
+
+        @Override
+        public void onClick(View view) {
+            _mClickListener._recyclerClickListener(getAdapterPosition());
         }
     }
 
     private void loadImageFromUrl(String url, ImageView img)
     {
-        Picasso.with(context).load(url).placeholder(R.mipmap.ic_launcher)
-                .error(R.mipmap.ic_launcher)
+        Picasso.with(context).load(url).placeholder(R.drawable.placeholder)
+                .error(R.drawable.placeholder)
                 .into(img, new com.squareup.picasso.Callback()
                 {
 
@@ -89,4 +104,11 @@ public class UsersViewHolder extends RecyclerView.Adapter<UsersViewHolder.MyView
                     }
                 });
     }
+
+    // creating interface for click listener
+
+    public interface ClickListener {
+        void _recyclerClickListener(int _position);
+    }
+
 }

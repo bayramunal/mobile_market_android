@@ -2,6 +2,7 @@ package com.example.mobile_shopping.Screens;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -35,6 +36,12 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.theartofdev.edmodo.cropper.CropImage;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+
+import id.zelory.compressor.Compressor;
+
 
 public class MainScreenActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -45,8 +52,8 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
     private ActionBarDrawerToggle _toggle;
     private NavigationView _navigationView;
     public static Activity _mAct;
-    private FragmentTransaction _mFragmentTransaction;
-    private FragmentManager _mFragmentManager;
+    public static FragmentTransaction _mFragmentTransaction;
+    public static  FragmentManager _mFragmentManager;
     private StorageReference _mImageStorage;
     private FirebaseUser _currentUser;
     private DatabaseReference _mDatabase;
@@ -98,23 +105,12 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
                 HelperClass._afterLogOut(_mAct);
                 break;
             case R.id.drawerMenuProfile:
-
-                _clearAllFragments();
-
-                _mFragmentTransaction = _mFragmentManager.beginTransaction();
-                UserProfileFragment _profileFragment = new UserProfileFragment();
-                _mFragmentTransaction.add(R.id.fragment_container, _profileFragment, "_userFragment");
-                _mFragmentTransaction.commit();
+                _clearAllFragments(_mFragmentManager);
+                changeFragment(new UserProfileFragment(), _mFragmentTransaction, _mFragmentManager);
                 break;
             case R.id.allUsers:
-
-                _clearAllFragments();
-
-                _mFragmentTransaction = _mFragmentManager.beginTransaction();
-                AllUsersFragment _allUsersFragment = new AllUsersFragment();
-                _mFragmentTransaction.add(R.id.fragment_container, _allUsersFragment, "_usersFragment");
-                _mFragmentTransaction.commit();
-
+                _clearAllFragments(_mFragmentManager);
+                changeFragment(new AllUsersFragment(), _mFragmentTransaction, _mFragmentManager);
                 break;
 
         }
@@ -139,7 +135,10 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
                 HelperClass._showProgressDialog(this, "image is saving", "your image is saving in out database, please wait a moment");
                 Uri _resultUri = _result.getUri();
                 System.out.println("\n uri : " + _resultUri.toString());
+
                 final StorageReference _filePath = _mImageStorage.child("profile_images").child(_currentUserId + ".jpg");
+
+
                 _filePath.putFile(_resultUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
@@ -163,14 +162,18 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
                 Exception _exception = _result.getError();
             }
-
         }
-
     }
 
-    private void _clearAllFragments() {
-        for (Fragment fragment : getSupportFragmentManager().getFragments()) {
-            getSupportFragmentManager().beginTransaction().remove(fragment).commit();
+    public static void changeFragment (Fragment _mFragment, FragmentTransaction _mFragmentTransaction, FragmentManager _mFragmentManager) {
+        _mFragmentTransaction = _mFragmentManager.beginTransaction();
+        _mFragmentTransaction.add(R.id.fragment_container, _mFragment);
+        _mFragmentTransaction.commit();
+    }
+
+    public static void _clearAllFragments(FragmentManager _mFragmentManager) {
+        for (Fragment fragment : _mFragmentManager.getFragments()) {
+            _mFragmentManager.beginTransaction().remove(fragment).commit();
         }
     }
 }

@@ -12,25 +12,21 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.mobile_shopping.R;
+import com.example.mobile_shopping.Screens.MainScreenActivity;
 import com.example.mobile_shopping.Users;
 import com.example.mobile_shopping.UsersViewHolder;
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.firebase.ui.database.FirebaseRecyclerOptions;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.sql.SQLOutput;
 import java.util.ArrayList;
-import java.util.List;
 
-public class AllUsersFragment extends Fragment {
+public class AllUsersFragment extends Fragment implements UsersViewHolder.ClickListener {
 
 
-    private RecyclerView _mRecycler;
+    public static RecyclerView _mRecycler;
     private DatabaseReference _mUsersDatabase;
 
     @Nullable
@@ -64,18 +60,31 @@ public class AllUsersFragment extends Fragment {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 ArrayList<Users> list = new ArrayList<>();
                 for(DataSnapshot ds : dataSnapshot.getChildren()) {
+                    String key = ds.getKey();
+                    System.out.println("key : " + key);
                     String name = ds.child("_name").getValue(String.class);
                     String image = ds.child("_image").getValue(String.class);
                     String status = ds.child("_status").getValue(String.class);
-                    list.add(new Users(name, "", status, ""));
+                    String thumb = ds.child("_thumb_image").getValue(String.class);
+                    list.add(new Users(key, name, image, status, thumb));
                     System.out.println("\n veri : " + name + " / " + image + " / " + status);
                 }
-                _mRecycler.setAdapter(new UsersViewHolder(getContext(), list));
+                _mRecycler.setAdapter(new UsersViewHolder(getContext(), list, AllUsersFragment.this));
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {}
         };
         usersRef.addListenerForSingleValueEvent(eventListener);
+    }
+
+    @Override
+    public void _recyclerClickListener(int _position) {
+        MainScreenActivity._clearAllFragments(MainScreenActivity._mFragmentManager);
+
+        UserDetailFragment _udFragment = new UserDetailFragment();
+        _udFragment._uKey = UsersViewHolder._users.get(_position).get_key();
+
+        MainScreenActivity.changeFragment(new UserDetailFragment(), MainScreenActivity._mFragmentTransaction, MainScreenActivity._mFragmentManager);
     }
 }

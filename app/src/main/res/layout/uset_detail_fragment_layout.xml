@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+
+    <ImageView
+        android:id="@+id/userDetailPhoto"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/placeholder"
+        android:scaleType="fitXY"
+        />
+
+    <TextView
+        android:id="@+id/userDetailDisplayName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/userDetailPhoto"
+        android:layout_marginTop="50dp"
+        android:text="user display name"
+        android:gravity="center"
+        android:textSize="30sp"
+        />
+
+    <TextView
+        android:id="@+id/userDetailStatus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/userDetailDisplayName"
+        android:layout_marginTop="15dp"
+        android:textStyle="italic"
+        android:text="user status"
+        android:gravity="center"
+        android:textSize="24sp"
+        />
+    
+    <TextView
+        android:id="@+id/userDetailUserFriendsCount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/userDetailStatus"
+        android:text="384 friends | 3 mutual friends"
+        android:layout_marginTop="50dp"
+        android:textSize="24sp"
+        />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/userDetailUserFriendsCount"
+        android:layout_centerHorizontal="true"
+        android:text="send friend request"
+        android:layout_marginTop="10dp"
+        android:layout_alignStart="@id/userDetailUserFriendsCount"
+        android:layout_alignEnd="@id/userDetailUserFriendsCount"
+        />
+    
+
+
+
+
+
+</RelativeLayout>

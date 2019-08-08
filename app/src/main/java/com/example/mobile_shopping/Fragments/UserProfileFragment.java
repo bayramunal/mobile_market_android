@@ -61,6 +61,7 @@ public class UserProfileFragment extends Fragment {
 
         return _view;
     }
+
     private void _init(View _view) {
         _mUser = FirebaseAuth.getInstance().getCurrentUser();
         _currentUserId = _mUser.getUid();
@@ -93,7 +94,6 @@ public class UserProfileFragment extends Fragment {
             }
         });
     }
-
 
     public void _userProfileChangeStatusButton () {
         HelperClass._showDialog(getContext(), _alertView);

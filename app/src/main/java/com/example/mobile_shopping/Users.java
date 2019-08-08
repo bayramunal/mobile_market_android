@@ -2,17 +2,30 @@ package com.example.mobile_shopping;
 
 public class Users {
 
-    String _name, _image, _status, _thumb_image;
+    String _key;
+    String _name;
+    String _image;
+    String _status;
+    String _thumb_image;
 
     public Users () {
 
     }
 
-    public Users(String _name, String _image, String _status, String _thumb_image) {
+    public Users(String _key, String _name, String _image, String _status, String _thumb_image) {
+        this._key = _key;
         this._name = _name;
         this._image = _image;
         this._status = _status;
         this._thumb_image = _thumb_image;
+    }
+
+    public String get_key() {
+        return _key;
+    }
+
+    public void set_key(String _key) {
+        this._key = _key;
     }
 
     public String get_name() {
