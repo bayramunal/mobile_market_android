@@ -6,11 +6,13 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.mobile_shopping.Screens.LoginScreenActivity;
 import com.example.mobile_shopping.Screens.MainScreenActivity;
 import com.google.android.material.textfield.TextInputLayout;
+import com.squareup.picasso.Picasso;
 
 public class HelperClass {
 
@@ -77,6 +79,23 @@ public class HelperClass {
         if (_mProgressDialog != null) {
             _mProgressDialog.dismiss();
         }
+    }
+
+    public static void _loadImageFromUrl(Context _context, String _url, ImageView _img) {
+        Picasso.with(_context).load(_url).placeholder(R.drawable.placeholder)
+                .error(R.drawable.placeholder)
+                .into(_img, new com.squareup.picasso.Callback() {
+
+                    @Override
+                    public void onSuccess() {
+
+                    }
+
+                    @Override
+                    public void onError() {
+
+                    }
+                });
     }
 
 

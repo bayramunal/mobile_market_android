@@ -13,7 +13,8 @@
 
     <item android:title="social">
         <menu>
-            <item android:title="send message"/>
+            <item android:id="@+id/allUsers" android:title="send message"/>
+            <item android:id="@+id/sendMessage" android:title="send message"/>
             <item android:title="inbox"/>
             <item android:title="message history"/>
             <item android:title="deleted messages"/>

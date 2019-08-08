@@ -14,9 +14,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.example.mobile_shopping.Fragments.AllUsersFragment;
 import com.example.mobile_shopping.Fragments.UserProfileFragment;
 import com.example.mobile_shopping.HelperClass;
 import com.example.mobile_shopping.R;
@@ -96,10 +98,23 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
                 HelperClass._afterLogOut(_mAct);
                 break;
             case R.id.drawerMenuProfile:
+
+                _clearAllFragments();
+
                 _mFragmentTransaction = _mFragmentManager.beginTransaction();
                 UserProfileFragment _profileFragment = new UserProfileFragment();
                 _mFragmentTransaction.add(R.id.fragment_container, _profileFragment, "_userFragment");
                 _mFragmentTransaction.commit();
+                break;
+            case R.id.allUsers:
+
+                _clearAllFragments();
+
+                _mFragmentTransaction = _mFragmentManager.beginTransaction();
+                AllUsersFragment _allUsersFragment = new AllUsersFragment();
+                _mFragmentTransaction.add(R.id.fragment_container, _allUsersFragment, "_usersFragment");
+                _mFragmentTransaction.commit();
+
                 break;
 
         }
@@ -153,16 +168,9 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
 
     }
 
-    /**
-     *
-     * _mDatabase.child("_image").setValue(_downloadUrl).addOnCompleteListener(new OnCompleteListener<Void>() {
-     *                                 @Override
-     *                                 public void onComplete(@NonNull Task<Void> task) {
-     *                                     if (task.isSuccessful()) {
-     *                                         Toast.makeText(MainScreenActivity.this, "your image was successfully added to our storage", Toast.LENGTH_SHORT).show();
-     *                                     }
-     *                                 }
-     *                             });
-     *
-     */
+    private void _clearAllFragments() {
+        for (Fragment fragment : getSupportFragmentManager().getFragments()) {
+            getSupportFragmentManager().beginTransaction().remove(fragment).commit();
+        }
+    }
 }

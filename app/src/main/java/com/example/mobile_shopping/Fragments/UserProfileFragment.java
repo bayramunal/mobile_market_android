@@ -1,8 +1,6 @@
 package com.example.mobile_shopping.Fragments;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,12 +12,10 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.constraintlayout.solver.widgets.Helper;
 import androidx.fragment.app.Fragment;
 
 import com.example.mobile_shopping.HelperClass;
 import com.example.mobile_shopping.R;
-import com.example.mobile_shopping.Screens.MainScreenActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputLayout;
@@ -32,14 +28,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
-import com.theartofdev.edmodo.cropper.CropImage;
-
-import java.util.concurrent.ExecutionException;
 
 import de.hdodenhof.circleimageview.CircleImageView;
-
-import static android.app.Activity.RESULT_OK;
 
 public class UserProfileFragment extends Fragment {
 
@@ -80,6 +70,7 @@ public class UserProfileFragment extends Fragment {
         _layoutUserImage = _view.findViewById(R.id.userProfilePhoto);
         _layoutUserDisplayName = _view.findViewById(R.id.userProfileDisplayName);
         _layoutUserStatus = _view.findViewById(R.id.userProfileStatus);
+        _layoutUserImage = _view.findViewById(R.id.userProfilePhoto);
 
         _btnProfilePhoto = _view.findViewById(R.id.userProfileChangePhotoBtn);
         _btnChoosePhotoClick(_btnProfilePhoto);
@@ -155,6 +146,7 @@ public class UserProfileFragment extends Fragment {
 
                 _layoutUserDisplayName.setText(_userName);
                 _layoutUserStatus.setText(_userStatus);
+                HelperClass._loadImageFromUrl(getContext(), _userImage, _layoutUserImage);
             }
 
             @Override
