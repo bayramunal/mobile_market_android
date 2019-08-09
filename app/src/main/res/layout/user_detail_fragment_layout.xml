@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/userDetailPhoto"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/placeholder"
+            android:scaleType="fitXY"
+            />
+
+        <TextView
+            android:id="@+id/userDetailDisplayName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/userDetailPhoto"
+            android:layout_marginTop="50dp"
+            android:text="user display name"
+            android:gravity="center"
+            android:textSize="30sp"
+            />
+
+        <TextView
+            android:id="@+id/userDetailStatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/userDetailDisplayName"
+            android:layout_marginTop="15dp"
+            android:textStyle="italic"
+            android:text="user status"
+            android:gravity="center"
+            android:textSize="24sp"
+            />
+
+        <TextView
+            android:id="@+id/userDetailUserFriendsCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@id/userDetailStatus"
+            android:text="384 friends | 3 mutual friends"
+            android:layout_marginTop="50dp"
+            android:textSize="24sp"
+            />
+
+        <Button
+            android:id="@+id/userDeatilSendRequest"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/userDetailUserFriendsCount"
+            android:layout_centerHorizontal="true"
+            android:text="send friend request"
+            android:layout_marginTop="10dp"
+            android:layout_alignStart="@id/userDetailUserFriendsCount"
+            android:layout_alignEnd="@id/userDetailUserFriendsCount"
+            />
+
+        <Button
+            android:id="@+id/userDetailCancelRequest"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/userDeatilSendRequest"
+            android:layout_centerHorizontal="true"
+            android:text="cancel friend request"
+            android:layout_marginTop="10dp"
+            android:layout_alignStart="@id/userDetailUserFriendsCount"
+            android:layout_alignEnd="@id/userDetailUserFriendsCount"
+            android:visibility="gone"
+            />
+
+        <Button
+            android:id="@+id/userDetailAcceptRequest"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/userDetailCancelRequest"
+            android:layout_centerHorizontal="true"
+            android:text="accept friend request"
+            android:layout_marginTop="10dp"
+            android:layout_alignStart="@id/userDetailUserFriendsCount"
+            android:layout_alignEnd="@id/userDetailUserFriendsCount"
+            android:visibility="gone"
+            />
+
+        <Button
+            android:id="@+id/userDetailDeclineRequest"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/userDetailAcceptRequest"
+            android:layout_centerHorizontal="true"
+            android:text="decline friend request"
+            android:layout_marginTop="10dp"
+            android:layout_alignStart="@id/userDetailUserFriendsCount"
+            android:layout_alignEnd="@id/userDetailUserFriendsCount"
+            android:visibility="gone"
+            />
+
+        <Button
+            android:id="@+id/userDetailUnfriend"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/userDetailAcceptRequest"
+            android:layout_centerHorizontal="true"
+            android:text="remove from friends"
+            android:layout_marginTop="10dp"
+            android:layout_alignStart="@id/userDetailUserFriendsCount"
+            android:layout_alignEnd="@id/userDetailUserFriendsCount"
+            android:visibility="gone"
+            />
+    </RelativeLayout>
+</ScrollView>

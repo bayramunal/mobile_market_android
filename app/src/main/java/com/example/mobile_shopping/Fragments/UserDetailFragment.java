@@ -26,15 +26,20 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.DateFormat;
+import java.util.Date;
+
 public class UserDetailFragment extends Fragment {
 
     public static String _uKey;
-    private DatabaseReference _mReference;
     private FirebaseUser _mCurrentUser;
     private TextView _uDisplayName, _uStatus;
     private ImageView _uImage;
-    private Button _btnSendReq, _btnDeclineReq, _btnAcceptReq;
+    private Button _btnSendReq, _btnCancelReq, _btnAcceptReq, _btnDeclineReq, _btnRemoveFriends;
+
     private DatabaseReference _mFriendReqDb;
+    private DatabaseReference _mFriendDb;
+    private DatabaseReference _mReference;
 
     private String _mCurrentState;
 
@@ -44,7 +49,7 @@ public class UserDetailFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        View _view = inflater.inflate(R.layout.uset_detail_fragment_layout, null);
+        View _view = inflater.inflate(R.layout.user_detail_fragment_layout, null);
 
         _init(_view);
 
@@ -61,17 +66,69 @@ public class UserDetailFragment extends Fragment {
         _uStatus = _view.findViewById(R.id.userDetailStatus);
         _uImage = _view.findViewById(R.id.userDetailPhoto);
         _btnSendReq = _view.findViewById(R.id.userDeatilSendRequest);
-        _btnDeclineReq = _view.findViewById(R.id.userDeatilDeclineRequest);
+        _btnCancelReq = _view.findViewById(R.id.userDetailCancelRequest);
         _btnAcceptReq = _view.findViewById(R.id.userDetailAcceptRequest);
+        _btnDeclineReq = _view.findViewById(R.id.userDetailDeclineRequest);
+        _btnRemoveFriends = _view.findViewById(R.id.userDetailUnfriend);
 
+        setButtonsVisibilities();
 
-        _btnSendReqClickListener(_btnSendReq);
-        _btnDeclineReqClickListener(_btnDeclineReq);
-        _btnAccepReqClickListener(_btnAcceptReq);
+        _btnRemoveFriends.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                _btnRemoveFriendsClickListener();
+            }
+        });
+
+        _btnSendReq.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                System.out.println("state : " + _mCurrentState);
+                _btnSendReqClickListener();
+            }
+        });
+
+        _btnCancelReq.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                System.out.println("state : " + _mCurrentState);
+                _btnCancelReqClickListener();
+            }
+        });
+
+        _btnAcceptReq.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                System.out.println("state : " + _mCurrentState);
+                _btnAccepReqClickListener();
+            }
+        });
+
+        _btnDeclineReq.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                System.out.println("state : " + _mCurrentState);
+                _btnDeclineClickListener();
+            }
+        });
 
         _mReference = FirebaseDatabase.getInstance().getReference().child("_users").child(_uKey);
+        _mFriendDb = FirebaseDatabase.getInstance().getReference().child("friends");
         _getUserInformations(_mReference);
 
+    }
+
+    private void setButtonsVisibilities() {
+        if (_mCurrentState.equals("not_friends")) {
+            _btnVisibilities(_btnSendReq, _btnAcceptReq, _btnDeclineReq, _btnCancelReq, _btnRemoveFriends);
+        } else if (_mCurrentState.equals("req_sent")) {
+            _btnVisibilities(_btnCancelReq, _btnSendReq, _btnDeclineReq, _btnAcceptReq, _btnRemoveFriends);
+        } else if (_mCurrentState.equals("req_received")) {
+            _btnVisibilities(_btnAcceptReq, _btnSendReq, _btnCancelReq, _btnRemoveFriends);
+            _btnVisibilities(_btnDeclineReq, _btnSendReq, _btnCancelReq, _btnRemoveFriends);
+        } else if (_mCurrentState.equals("friends")) {
+            _btnVisibilities(_btnRemoveFriends, _btnSendReq, _btnCancelReq, _btnDeclineReq, _btnAcceptReq);
+        }
     }
 
 
@@ -98,17 +155,12 @@ public class UserDetailFragment extends Fragment {
                                     String req_type = dataSnapshot.child(_uKey).child("req_type").getValue().toString();
                                     if (req_type.equals("received")) {
                                         _mCurrentState = "req_received";
-                                        _btnSendReq.setVisibility(View.GONE);
-                                        _btnDeclineReq.setVisibility(View.GONE);
-                                        _btnAcceptReq.setVisibility(View.VISIBLE);
 
                                     } else if (req_type.equals("sent")) {
                                         _mCurrentState = "req_sent";
-                                        _btnDeclineReq.setVisibility(View.VISIBLE);
-                                        _btnAcceptReq.setVisibility(View.GONE);
-                                        _btnSendReq.setVisibility(View.GONE);
                                     }
                                 }
+                                setButtonsVisibilities();
                             }
 
                             @Override
@@ -116,8 +168,6 @@ public class UserDetailFragment extends Fragment {
 
                             }
                         });
-
-
             }
 
             @Override
@@ -127,15 +177,18 @@ public class UserDetailFragment extends Fragment {
         });
     }
 
-    private void _btnSendReqClickListener (Button _btn) {
-        _btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+    private void _btnVisibilities (Button... btn) {
+        btn[0].setVisibility(View.VISIBLE);
+        System.out.println("buton : " + btn[0].getText().toString());
+        for (int i = 1; i < btn.length; i++) {
+            btn[i].setVisibility(View.GONE);
+        }
+    }
+
+    private void _btnSendReqClickListener () {
                 if (_mCurrentState.equals("not_friends")) { // not belong friend yet
                     sendFriendReq();
                 }
-            }
-        });
     }
 
     private void sendFriendReq () {
@@ -150,9 +203,9 @@ public class UserDetailFragment extends Fragment {
                                         @Override
                                         public void onSuccess(Void aVoid) {
                                             _mCurrentState = "req_sent";
-                                            _btnDeclineReq.setVisibility(View.VISIBLE);
-                                            _btnSendReq.setVisibility(View.GONE);
                                             Toast.makeText(getContext(), "your friend request sent succesfully", Toast.LENGTH_SHORT).show();
+
+                                            setButtonsVisibilities();
                                         }
                                     });
                         } else {
@@ -162,10 +215,7 @@ public class UserDetailFragment extends Fragment {
                 });
     }
 
-    private void _btnDeclineReqClickListener (Button _btn) {
-        _btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+    private void _btnCancelReqClickListener() {
                 if (_mCurrentState.equals("req_sent")) {
                     _mFriendReqDb.child(_mCurrentUser.getUid()).child(_uKey).removeValue()
                             .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -178,14 +228,14 @@ public class UserDetailFragment extends Fragment {
                                                     public void onComplete(@NonNull Task<Void> task) {
                                                         if (task.isSuccessful()) {
                                                             _mCurrentState = "not_friends";
-                                                            _btnDeclineReq.setVisibility(View.GONE);
-                                                            _btnSendReq.setVisibility(View.VISIBLE);
 
                                                             Toast.makeText(getContext(), "your friend request cancelled successfully", Toast.LENGTH_SHORT).show();
 
                                                         } else {
                                                             Toast.makeText(getContext(), "while cancelling the friend request some error occured", Toast.LENGTH_SHORT).show();
                                                         }
+
+                                                        setButtonsVisibilities();
                                                     }
                                                 });
                                     } else {
@@ -194,13 +244,118 @@ public class UserDetailFragment extends Fragment {
                                 }
                             });
                 }
-            }
-        });
     }
 
-    private void _btnAccepReqClickListener(Button _btn) {
+    private void _btnDeclineClickListener() {
+        if (_mCurrentState.equals("req_received")) {
+            _mFriendReqDb.child(_mCurrentUser.getUid()).child(_uKey).removeValue()
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()) {
+                                _mFriendReqDb.child(_uKey).child(_mCurrentUser.getUid()).removeValue()
+                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                if (task.isSuccessful()) {
+                                                    _mCurrentState = "not_friends";
 
+                                                    Toast.makeText(getContext(), "your friend request cancelled successfully", Toast.LENGTH_SHORT).show();
 
+                                                } else {
+                                                    Toast.makeText(getContext(), "while cancelling the friend request some error occured", Toast.LENGTH_SHORT).show();
+                                                }
+
+                                                setButtonsVisibilities();
+                                            }
+                                        });
+                            } else {
+                                Toast.makeText(getContext(), "while cancelling the friend request some error occured", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+        }
+
+    }
+
+    private void _btnRemoveFriendsClickListener() {
+        if (_mCurrentState.equals("friends")) {
+            _mFriendDb.child(_mCurrentUser.getUid()).child(_uKey).removeValue()
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()) {
+                                _mFriendDb.child(_uKey).child(_mCurrentUser.getUid()).removeValue()
+                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                if (task.isSuccessful()) {
+                                                    _mCurrentState = "not_friends";
+
+                                                    Toast.makeText(getContext(), "your friend request cancelled successfully", Toast.LENGTH_SHORT).show();
+
+                                                } else {
+                                                    Toast.makeText(getContext(), "while cancelling the friend request some error occured", Toast.LENGTH_SHORT).show();
+                                                }
+
+                                                setButtonsVisibilities();
+                                            }
+                                        });
+                            } else {
+                                Toast.makeText(getContext(), "while cancelling the friend request some error occured", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+        }
+
+    }
+
+    private void _btnAccepReqClickListener() {
+
+        if (_mCurrentState.equals("req_received")) {
+            final String _mcurrentDate = DateFormat.getDateTimeInstance().format(new Date());
+            _mFriendDb.child(_mCurrentUser.getUid()).child(_uKey).setValue(_mcurrentDate)
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()) {
+                                _mFriendDb.child(_uKey).child(_mCurrentUser.getUid()).setValue(_mcurrentDate)
+                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                if (task.isSuccessful()) {
+                                                    _mFriendReqDb.child(_uKey).child(_mCurrentUser.getUid())
+                                                            .removeValue()
+                                                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                                @Override
+                                                                public void onComplete(@NonNull Task<Void> task) {
+                                                                    _mFriendReqDb.child(_mCurrentUser.getUid()).child(_uKey)
+                                                                            .removeValue()
+                                                                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                                                @Override
+                                                                                public void onComplete(@NonNull Task<Void> task) {
+                                                                                    if (task.isSuccessful()) {
+                                                                                        _mCurrentState = "friends";
+                                                                                    } else {
+
+                                                                                    }
+
+                                                                                    setButtonsVisibilities();
+                                                                                }
+                                                                            });
+                                                                }
+                                                            });
+                                                } else {
+
+                                                }
+                                            }
+                                        });
+                            } else {
+
+                            }
+                        }
+                    });
+        }
 
     }
 
