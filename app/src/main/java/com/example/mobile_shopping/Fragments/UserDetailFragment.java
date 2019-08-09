@@ -159,6 +159,24 @@ public class UserDetailFragment extends Fragment {
                                     } else if (req_type.equals("sent")) {
                                         _mCurrentState = "req_sent";
                                     }
+                                } else {
+                                    _mFriendDb.child(_mCurrentUser.getUid())
+                                            .addListenerForSingleValueEvent(new ValueEventListener() {
+                                                        @Override
+                                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                            if (dataSnapshot.hasChild(_uKey)) {
+                                                                _mCurrentState = "friends";
+                                                                setButtonsVisibilities();
+                                                            }
+                                                        }
+
+                                                        @Override
+                                                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                                        }
+                                                    }
+
+                                            );
                                 }
                                 setButtonsVisibilities();
                             }
@@ -358,6 +376,4 @@ public class UserDetailFragment extends Fragment {
         }
 
     }
-
-
 }
