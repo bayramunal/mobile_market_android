@@ -32,6 +32,7 @@ dependencies {
 
     implementation 'com.google.firebase:firebase-database:18.0.1'
     implementation 'com.google.firebase:firebase-storage:18.1.1'
+    implementation 'com.google.firebase:firebase-messaging:19.0.1'
     testİmplementation 'junit:junit:4.12'
     androidTestİmplementation 'androidx.test:runner:1.2.0'
     androidTestİmplementation 'androidx.test.espresso:espresso-core:3.2.0'

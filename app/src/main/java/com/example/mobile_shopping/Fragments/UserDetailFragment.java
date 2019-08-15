@@ -28,6 +28,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.text.DateFormat;
 import java.util.Date;
+import java.util.HashMap;
 
 public class UserDetailFragment extends Fragment {
 
@@ -40,6 +41,7 @@ public class UserDetailFragment extends Fragment {
     private DatabaseReference _mFriendReqDb;
     private DatabaseReference _mFriendDb;
     private DatabaseReference _mReference;
+    private DatabaseReference _mNotificationDb;
 
     private String _mCurrentState;
 
@@ -114,6 +116,7 @@ public class UserDetailFragment extends Fragment {
 
         _mReference = FirebaseDatabase.getInstance().getReference().child("_users").child(_uKey);
         _mFriendDb = FirebaseDatabase.getInstance().getReference().child("friends");
+        _mNotificationDb = FirebaseDatabase.getInstance().getReference().child("notifications");
         _getUserInformations(_mReference);
 
     }
@@ -220,10 +223,27 @@ public class UserDetailFragment extends Fragment {
                                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                                         @Override
                                         public void onSuccess(Void aVoid) {
-                                            _mCurrentState = "req_sent";
-                                            Toast.makeText(getContext(), "your friend request sent succesfully", Toast.LENGTH_SHORT).show();
 
-                                            setButtonsVisibilities();
+                                            HashMap<String, String> _mNotificationData = new HashMap<>();
+                                            _mNotificationData.put("from", _mCurrentUser.getUid());
+                                            _mNotificationData.put("type", "request");
+
+                                            _mNotificationDb.child(_uKey).push().setValue(_mNotificationData)
+                                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                        @Override
+                                                        public void onComplete(@NonNull Task<Void> task) {
+                                                            if (task.isSuccessful()) {
+                                                                _mCurrentState = "req_sent";
+                                                                Toast.makeText(getContext(), "your friend request sent succesfully", Toast.LENGTH_SHORT).show();
+
+                                                                setButtonsVisibilities();
+                                                            } else {
+                                                                Toast.makeText(getContext(), "failed to send friend request", Toast.LENGTH_SHORT).show();
+                                                            }
+                                                        }
+                                                    });
+
+
                                         }
                                     });
                         } else {

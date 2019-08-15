@@ -19,6 +19,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.HashMap;
 
@@ -31,6 +32,7 @@ public class LoginScreenActivity extends AppCompatActivity {
     private FirebaseUser _currentUser;
     private DatabaseReference _mDatabase;
     private FirebaseDatabase _mfirebaseDatabase;
+    private DatabaseReference _mUserDatabase;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -49,6 +51,7 @@ public class LoginScreenActivity extends AppCompatActivity {
         _mAct = this;
         _mAuth = FirebaseAuth.getInstance();
         _mfirebaseDatabase = FirebaseDatabase.getInstance();
+        _mUserDatabase = FirebaseDatabase.getInstance().getReference().child("_users");
 
         if (_checkCurrentUser())
             HelperClass._afterSucceedLogin(_mAct);
@@ -93,7 +96,22 @@ public class LoginScreenActivity extends AppCompatActivity {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
-                                HelperClass._afterSucceedLogin(_mAct);
+
+                                String _mDeviceToken = FirebaseInstanceId.getInstance().getToken();
+                                String _mUserId = _mAuth.getCurrentUser().getUid();
+
+                                _mUserDatabase.child(_mUserId).child("device_token").setValue(_mDeviceToken)
+                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        if (task.isSuccessful()) {
+                                            HelperClass._afterSucceedLogin(_mAct);
+                                        } else {
+                                            _printErrorMessageWithException("failed to sign in :", task.getException());
+                                        }
+                                    }
+                                });
+
                             } else {
                                 _printErrorMessageWithException("failed to sign in :", task.getException());
                             }
