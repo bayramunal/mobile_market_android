@@ -15,6 +15,8 @@ import com.example.mobile_shopping.R;
 import com.example.mobile_shopping.Screens.MainScreenActivity;
 import com.example.mobile_shopping.Users;
 import com.example.mobile_shopping.UsersViewHolder;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -28,6 +30,7 @@ public class AllUsersFragment extends Fragment implements UsersViewHolder.ClickL
 
     private RecyclerView _mRecycler;
     private DatabaseReference _mUsersDatabase;
+    private FirebaseUser _mCurrentUser;
 
     @Nullable
     @Override
@@ -45,6 +48,7 @@ public class AllUsersFragment extends Fragment implements UsersViewHolder.ClickL
 
         _mUsersDatabase = FirebaseDatabase.getInstance().getReference().child("_users");
         _mUsersDatabase.keepSynced(true);
+        _mCurrentUser = FirebaseAuth.getInstance().getCurrentUser();
 
         _readUsers();
 
@@ -60,14 +64,16 @@ public class AllUsersFragment extends Fragment implements UsersViewHolder.ClickL
             public void onDataChange(DataSnapshot dataSnapshot) {
                 ArrayList<Users> list = new ArrayList<>();
                 for(DataSnapshot ds : dataSnapshot.getChildren()) {
-                    String key = ds.getKey();
-                    System.out.println("key : " + key);
-                    String name = ds.child("_name").getValue(String.class);
-                    String image = ds.child("_image").getValue(String.class);
-                    String status = ds.child("_status").getValue(String.class);
-                    String thumb = ds.child("_thumb_image").getValue(String.class);
-                    list.add(new Users(key, name, image, status, thumb));
-                    System.out.println("\n veri : " + name + " / " + image + " / " + status);
+                    if (!ds.getKey().equals(_mCurrentUser.getUid())) {
+                        String key = ds.getKey();
+                        System.out.println("key : " + key);
+                        String name = ds.child("_name").getValue(String.class);
+                        String image = ds.child("_image").getValue(String.class);
+                        String status = ds.child("_status").getValue(String.class);
+                        String thumb = ds.child("_thumb_image").getValue(String.class);
+                        list.add(new Users(key, name, image, status, thumb));
+                        System.out.println("\n veri : " + name + " / " + image + " / " + status);
+                    }
                 }
                 _mRecycler.setAdapter(new UsersViewHolder(getContext(), list, AllUsersFragment.this));
             }

@@ -19,27 +19,38 @@ exports.sendNotification = functions.database
       );
     }
 
-    const deviceToken = admin
+    const from_user = admin
       .database()
-      .ref(`/_users/${user_id}/device_token`)
+      .ref(`/notifications/${user_id}/${notification}`)
       .once("value");
 
-    return deviceToken.then(result => {
-      const token_id = result.val();
+    return from_user.then(fromUserResult => {
+      const from_user_id = fromUserResult.val();
 
-      const payload = {
-        notification: {
-          title: "Friend Request",
-          body: "You have a received a new friend request!",
-          icon: "default"
-        }
-      };
+      console.log("you have new notification from uid : ", from_user_id);
 
-      return admin
-        .messaging()
-        .sendToDevice(token_id, payload)
-        .then(response => {
-          return console.log("This was the notification Feature");
-        });
+      const deviceToken = admin
+        .database()
+        .ref(`/_users/${user_id}/device_token`)
+        .once("value");
+
+      return deviceToken.then(result => {
+        const token_id = result.val();
+
+        const payload = {
+          notification: {
+            title: "Friend Request",
+            body: "You have a received a new friend request!",
+            icon: "default"
+          }
+        };
+
+        return admin
+          .messaging()
+          .sendToDevice(token_id, payload)
+          .then(response => {
+            return console.log("This was the notification Feature");
+          });
+      });
     });
   });
