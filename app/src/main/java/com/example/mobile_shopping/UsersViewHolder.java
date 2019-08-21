@@ -6,15 +6,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.mobile_shopping.Fragments.AllUsersFragment;
 import com.squareup.picasso.Picasso;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
@@ -26,10 +21,10 @@ public class UsersViewHolder extends RecyclerView.Adapter<UsersViewHolder.MyView
     LayoutInflater inflater;
     Context context;
 
-    public static ArrayList<Users> _users;
+    public static ArrayList<Friends> _users;
     private ClickListener _mClickListener;
 
-    public UsersViewHolder(Context context, ArrayList<Users> users, ClickListener _mClickListener) {
+    public UsersViewHolder(Context context, ArrayList<Friends> users, ClickListener _mClickListener) {
         inflater = LayoutInflater.from(context);
         this._users = users;
         this.context = context;
@@ -46,7 +41,7 @@ public class UsersViewHolder extends RecyclerView.Adapter<UsersViewHolder.MyView
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
-        Users _user = _users.get(position);
+        Friends _user = _users.get(position);
         holder.setData(_user, position);
 
     }
@@ -74,7 +69,7 @@ public class UsersViewHolder extends RecyclerView.Adapter<UsersViewHolder.MyView
 
         }
 
-        public void setData(Users user, int position) {
+        public void setData(Friends user, int position) {
             this._displayName.setText(user.get_name());
             this._status.setText(user.get_status());
             loadImageFromUrl(user.get_image(), _userImg);

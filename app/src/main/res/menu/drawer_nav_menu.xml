@@ -14,7 +14,7 @@
     <item android:title="social">
         <menu>
             <item android:id="@+id/allUsers" android:title="show app users"/>
-            <item android:id="@+id/sendMessage" android:title="send message"/>
+            <item android:id="@+id/friends" android:title="friends"/>
             <item android:title="inbox"/>
             <item android:title="message history"/>
             <item android:title="deleted messages"/>

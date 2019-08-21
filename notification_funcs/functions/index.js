@@ -8,40 +8,48 @@ exports.sendNotification = functions.database
   .ref("/notifications/{user_id}/{notification_id}")
   .onWrite((change, context) => {
     const user_id = context.params.user_id;
-    const notification = context.params.notification;
+    const notification_id = context.params.notification_id;
 
-    console.log("we have a notification to send to : ", user_id);
+    console.log("We have a notification from : ", user_id);
 
     if (!change.after.val()) {
       return console.log(
-        "a notification has been deleted from the database : ",
-        notification
+        "A Notification has been deleted from the database : ",
+        notification_id
       );
     }
 
-    const from_user = admin
+    const fromUser = admin
       .database()
-      .ref(`/notifications/${user_id}/${notification}`)
+      .ref(`/notifications/${user_id}/${notification_id}`)
       .once("value");
 
-    return from_user.then(fromUserResult => {
-      const from_user_id = fromUserResult.val();
+    return fromUser.then(fromUserResult => {
+      const from_user_id = fromUserResult.val().from;
 
-      console.log("you have new notification from uid : ", from_user_id);
+      console.log("You have new notification from  : ", from_user_id);
 
+      const userQuery = admin
+        .database()
+        .ref(`_users/${from_user_id}/_name`)
+        .once("value");
       const deviceToken = admin
         .database()
         .ref(`/_users/${user_id}/device_token`)
         .once("value");
 
-      return deviceToken.then(result => {
-        const token_id = result.val();
+      return Promise.all([userQuery, deviceToken]).then(result => {
+        const userName = result[0].val();
+        const token_id = result[1].val();
 
         const payload = {
           notification: {
-            title: "Friend Request",
-            body: "You have a received a new friend request!",
+            title: "New Friend Request",
+            body: `${userName} has sent you request`,
             icon: "default"
+          },
+          data: {
+            from_user_id: from_user_id
           }
         };
 

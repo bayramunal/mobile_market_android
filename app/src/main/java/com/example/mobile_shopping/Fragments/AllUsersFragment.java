@@ -11,9 +11,9 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.mobile_shopping.Friends;
 import com.example.mobile_shopping.R;
 import com.example.mobile_shopping.Screens.MainScreenActivity;
-import com.example.mobile_shopping.Users;
 import com.example.mobile_shopping.UsersViewHolder;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -62,17 +62,20 @@ public class AllUsersFragment extends Fragment implements UsersViewHolder.ClickL
         ValueEventListener eventListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                ArrayList<Users> list = new ArrayList<>();
+                ArrayList<Friends> list = new ArrayList<>();
                 for(DataSnapshot ds : dataSnapshot.getChildren()) {
                     if (!ds.getKey().equals(_mCurrentUser.getUid())) {
                         String key = ds.getKey();
-                        System.out.println("key : " + key);
-                        String name = ds.child("_name").getValue(String.class);
-                        String image = ds.child("_image").getValue(String.class);
-                        String status = ds.child("_status").getValue(String.class);
-                        String thumb = ds.child("_thumb_image").getValue(String.class);
-                        list.add(new Users(key, name, image, status, thumb));
-                        System.out.println("\n veri : " + name + " / " + image + " / " + status);
+                            System.out.println("key : " + key);
+                            String name = ds.child("_name").getValue(String.class);
+                            String image = ds.child("_image").getValue(String.class);
+                            String status = ds.child("_status").getValue(String.class);
+                            String thumb = ds.child("_thumb_image").getValue(String.class);
+                            if (name != null && !name.isEmpty()) {
+                                list.add(new Friends(key, name, image, status, thumb));
+                            }
+                            System.out.println("\n veri : " + name + " / " + image + " / " + status);
+
                     }
                 }
                 _mRecycler.setAdapter(new UsersViewHolder(getContext(), list, AllUsersFragment.this));

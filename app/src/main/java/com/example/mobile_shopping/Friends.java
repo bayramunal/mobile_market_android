@@ -1,6 +1,6 @@
 package com.example.mobile_shopping;
 
-public class Users {
+public class Friends {
 
     String _key;
     String _name;
@@ -8,11 +8,11 @@ public class Users {
     String _status;
     String _thumb_image;
 
-    public Users () {
+    public Friends() {
 
     }
 
-    public Users(String _key, String _name, String _image, String _status, String _thumb_image) {
+    public Friends(String _key, String _name, String _image, String _status, String _thumb_image) {
         this._key = _key;
         this._name = _name;
         this._image = _image;

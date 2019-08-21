@@ -20,7 +20,9 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.example.mobile_shopping.Fragments.AllUsersFragment;
+import com.example.mobile_shopping.Fragments.UserDetailFragment;
 import com.example.mobile_shopping.Fragments.UserProfileFragment;
+import com.example.mobile_shopping.Fragments.UsersFriendsFragment;
 import com.example.mobile_shopping.HelperClass;
 import com.example.mobile_shopping.R;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -112,6 +114,10 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
                 _clearAllFragments(_mFragmentManager);
                 changeFragment(new AllUsersFragment(), _mFragmentTransaction, _mFragmentManager);
                 break;
+            case R.id.friends:
+                _clearAllFragments(_mFragmentManager);
+                changeFragment(new UsersFriendsFragment(), _mFragmentTransaction, _mFragmentManager);
+                break;
 
         }
         return true;
@@ -119,6 +125,13 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+
+        if (requestCode == 0) {
+            UserDetailFragment _mFragment = new UserDetailFragment();
+            _mFragment._uKey = data.getStringExtra("user_id");
+            changeFragment(_mFragment, _mFragmentTransaction, _mFragmentManager);
+        }
+
         if (requestCode == GALLERY_IMAGE_REQUEST && resultCode == RESULT_OK) {
             Uri _imageUri = data.getData();
 
@@ -175,5 +188,24 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
         for (Fragment fragment : _mFragmentManager.getFragments()) {
             _mFragmentManager.beginTransaction().remove(fragment).commit();
         }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (_currentUser == null ) {
+            startActivity(new Intent(this, LoginScreenActivity.class));
+        } else {
+            _mDatabase.child("online").setValue(true);
+
+
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        _mDatabase.child("online").setValue(false) ;
+
     }
 }

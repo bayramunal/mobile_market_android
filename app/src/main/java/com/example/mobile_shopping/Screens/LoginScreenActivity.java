@@ -41,7 +41,7 @@ public class LoginScreenActivity extends AppCompatActivity {
         _init();
     }
 
-    private void _init () {
+    private void _init() {
         _textInputEmail = findViewById(R.id.textInputEmail);
         _textInputPassword = findViewById(R.id.textInputPassword);
 
@@ -57,7 +57,7 @@ public class LoginScreenActivity extends AppCompatActivity {
             HelperClass._afterSucceedLogin(_mAct);
     }
 
-    private boolean _checkCurrentUser () {
+    private boolean _checkCurrentUser() {
         return _mAuth.getCurrentUser() == null ? false : true;
     }
 
@@ -66,7 +66,7 @@ public class LoginScreenActivity extends AppCompatActivity {
     }
 
 
-    public void _loginScreenCreateAccount (View view) {
+    public void _loginScreenCreateAccount(View view) {
         String _userEmail = _edtUserEmail.getText().toString();
         String _userPassword = _edtUserPassword.getText().toString();
 
@@ -77,6 +77,19 @@ public class LoginScreenActivity extends AppCompatActivity {
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
                                 _setUsersValueOnDatabase();
+                                String _mDeviceToken = FirebaseInstanceId.getInstance().getToken();
+                                String _mUserId = _mAuth.getCurrentUser().getUid();
+                                _mUserDatabase.child(_mUserId).child("device_token").setValue(_mDeviceToken)
+                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                if (task.isSuccessful()) {
+                                                    HelperClass._afterSucceedLogin(_mAct);
+                                                } else {
+                                                    _printErrorMessageWithException("failed to sign in :", task.getException());
+                                                }
+                                            }
+                                        });
                                 HelperClass._afterSucceedLogin(_mAct);
                             } else {
                                 _printErrorMessageWithException("failed to sign up :", task.getException());
@@ -102,15 +115,15 @@ public class LoginScreenActivity extends AppCompatActivity {
 
                                 _mUserDatabase.child(_mUserId).child("device_token").setValue(_mDeviceToken)
                                         .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<Void> task) {
-                                        if (task.isSuccessful()) {
-                                            HelperClass._afterSucceedLogin(_mAct);
-                                        } else {
-                                            _printErrorMessageWithException("failed to sign in :", task.getException());
-                                        }
-                                    }
-                                });
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                if (task.isSuccessful()) {
+                                                    HelperClass._afterSucceedLogin(_mAct);
+                                                } else {
+                                                    _printErrorMessageWithException("failed to sign in :", task.getException());
+                                                }
+                                            }
+                                        });
 
                             } else {
                                 _printErrorMessageWithException("failed to sign in :", task.getException());
@@ -120,7 +133,7 @@ public class LoginScreenActivity extends AppCompatActivity {
         }
     }
 
-    private void _setUsersValueOnDatabase () {
+    private void _setUsersValueOnDatabase() {
         _currentUser = _mAuth.getCurrentUser();
         String _userId = _currentUser.getUid();
         _mDatabase = _mfirebaseDatabase.getReference().child("_users").child(_userId);
